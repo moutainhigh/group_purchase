@@ -23,7 +23,7 @@ import com.mds.group.purchase.core.AbstractService;
 import com.mds.group.purchase.financial.model.FinancialDetails;
 import com.mds.group.purchase.financial.service.FinancialDetailsService;
 import com.mds.group.purchase.order.model.Order;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.user.model.Wxuser;
 import com.mds.group.purchase.utils.GenSerialNumber;
 import com.mds.group.purchase.utils.ParamUtil;
@@ -148,19 +148,19 @@ public class FinancialDetailsServiceImpl extends AbstractService<FinancialDetail
     }
 
     @Override
-    public void save(@NotNull GroupBpavawiceOrder groupBpavawiceOrder, @NotNull Wxuser wxuser) {
-        if (groupBpavawiceOrder != null && wxuser != null) {
+    public void save(@NotNull GroupBalanceOrder groupbalanceOrder, @NotNull Wxuser wxuser) {
+        if (groupbalanceOrder != null && wxuser != null) {
             //提现成功后插入对账单记录
             FinancialDetails financialDetails = new FinancialDetails();
-            financialDetails.setAccount(groupBpavawiceOrder.getOutBpavawice());
+            financialDetails.setAccount(groupbalanceOrder.getOutBalance());
             financialDetails.setAccountType(FinancialDetails.Constant.ACCOUNT_TYPE_DISBURSEMENT);
-            financialDetails.setAppmodelId(groupBpavawiceOrder.getAppmodelId());
+            financialDetails.setAppmodelId(groupbalanceOrder.getAppmodelId());
             financialDetails.setCreatedTime(DateUtil.now());
-            financialDetails.setGroupId(groupBpavawiceOrder.getGroupLeaderId());
-            financialDetails.setOrderId(groupBpavawiceOrder.getGroupBpavawiceOrderId());
+            financialDetails.setGroupId(groupbalanceOrder.getGroupLeaderId());
+            financialDetails.setOrderId(groupbalanceOrder.getGroupBalanceOrderId());
             financialDetails.setModifyTime(DateUtil.now());
             financialDetails.setSerialNumber(
-                    GenSerialNumber.initGenSerialNumber(GenSerialNumber.FINANCIAL, groupBpavawiceOrder.getAppmodelId())
+                    GenSerialNumber.initGenSerialNumber(GenSerialNumber.FINANCIAL, groupbalanceOrder.getAppmodelId())
                             .nextId());
             financialDetails.setWxuserId(wxuser.getWxuserId());
             financialDetails.setType(FinancialDetails.Constant.TYPE_EXTRACT);

@@ -30,7 +30,7 @@ import com.mds.group.purchase.logistics.service.*;
 import com.mds.group.purchase.logistics.vo.LineV12Vo;
 import com.mds.group.purchase.user.model.GroupLeader;
 import com.mds.group.purchase.user.model.Wxuser;
-import com.mds.group.purchase.user.service.GroupBpavawiceOrderService;
+import com.mds.group.purchase.user.service.GroupBalanceOrderService;
 import com.mds.group.purchase.user.service.GroupLeaderService;
 import com.mds.group.purchase.user.service.WxuserService;
 import com.mds.group.purchase.user.vo.*;
@@ -67,7 +67,7 @@ public class GroupLeaderControllerTest extends GroupPurchaseApplicationTests {
     private CommunityService communityService;
 
     @Autowired
-    private GroupBpavawiceOrderService groupBpavawiceOrderService;
+    private GroupBalanceOrderService groupbalanceOrderService;
 
     private static String appmodelId = "S00050001wx219007e82b660f17";
 
@@ -267,7 +267,7 @@ public class GroupLeaderControllerTest extends GroupPurchaseApplicationTests {
         withdrawMoneyApply();
         withdrawMoneyApply();
         withdrawMoneyApply();
-        ResultPage<List<WithdrawMoneyDetailsVO>> list = groupBpavawiceOrderService
+        ResultPage<List<WithdrawMoneyDetailsVO>> list = groupbalanceOrderService
                 .withdrawMoneyDetails(0, 10, 0, "TZ1544235617666623", appmodelId);
         Assert.assertNotNull("数据为空", list);
     }
@@ -281,12 +281,12 @@ public class GroupLeaderControllerTest extends GroupPurchaseApplicationTests {
     public void withdrawMoneyRemark() {
         withdrawMoneyApply();
         withdrawMoneyApply();
-        ResultPage<List<WithdrawMoneyDetailsVO>> resultPage = groupBpavawiceOrderService
+        ResultPage<List<WithdrawMoneyDetailsVO>> resultPage = groupbalanceOrderService
                 .withdrawMoneyDetails(0, 10, 0, "TZ1544235617666623", appmodelId);
         List<WithdrawMoneyDetailsVO> list = resultPage.getList();
         StringBuilder sb = new StringBuilder();
         for (WithdrawMoneyDetailsVO withdrawMoneyDetailsVO : list) {
-            sb.append(withdrawMoneyDetailsVO.getGroupBpavawiceOrderId()).append(",");
+            sb.append(withdrawMoneyDetailsVO.getGroupbalanceOrderId()).append(",");
         }
         String ids = sb.toString().substring(0, sb.length() - 1);
         RemarkVO remarkVO = new RemarkVO();
@@ -294,11 +294,11 @@ public class GroupLeaderControllerTest extends GroupPurchaseApplicationTests {
         String remark = "备注内容11111";
         remarkVO.setRemark(remark);
         remarkVO.setCoverType(1);
-        groupBpavawiceOrderService.withdrawMoneyRemark(remarkVO);
-        List<FinanceManagerVO> financeManagerVOS = groupBpavawiceOrderService
+        groupbalanceOrderService.withdrawMoneyRemark(remarkVO);
+        List<FinanceManagerVO> financeManagerVOS = groupbalanceOrderService
                 .findanceManager(1, 10, 0, "", "", "", "", ",", null);
         for (FinanceManagerVO financeManagerVO : financeManagerVOS) {
-            if (ids.contains(financeManagerVO.getGroupBpavawiceOrderId().toString())) {
+            if (ids.contains(financeManagerVO.getGroupBalanceOrderId().toString())) {
                 Assert.assertEquals("未备注成功", remark, financeManagerVO.getRemark());
             }
         }

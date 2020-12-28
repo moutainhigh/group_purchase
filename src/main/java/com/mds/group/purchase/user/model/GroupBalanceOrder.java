@@ -26,13 +26,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * The type Group bpavawice order.
+ * The type Group balance order.
  *
  * @author pavawi
  */
 @Data
-@Table(name = "t_group_bpavawice_order")
-public class GroupBpavawiceOrder {
+@Table(name = "t_group_balance_order")
+public class GroupBalanceOrder {
 
     /**
      * 待审核
@@ -49,14 +49,14 @@ public class GroupBpavawiceOrder {
 
 
     @Id
-    @Column(name = "group_bpavawice_order_id")
+    @Column(name = "group_balance_order_id")
     @ApiModelProperty(value = "订单id")
-    private Long groupBpavawiceOrderId;
+    private Long groupBalanceOrderId;
 
 
-    @Column(name = "out_bpavawice")
+    @Column(name = "out_balance")
     @ApiModelProperty(value = "提现余额")
-    private BigDecimal outBpavawice;
+    private BigDecimal outBalance;
 
     @Column(name = "create_time")
     @ApiModelProperty(value = "创建时间")

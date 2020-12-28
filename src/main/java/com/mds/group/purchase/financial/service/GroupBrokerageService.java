@@ -20,7 +20,7 @@ import com.mds.group.purchase.core.Service;
 import com.mds.group.purchase.financial.model.GroupBrokerage;
 import com.mds.group.purchase.order.model.Order;
 import com.mds.group.purchase.order.model.OrderDetail;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 
 import java.util.List;
 
@@ -71,7 +71,7 @@ public interface GroupBrokerageService extends Service<GroupBrokerage> {
     /**
      * Save.
      *
-     * @param bpavawiceOrder the bpavawice order
+     * @param balanceOrder the balance order
      */
-    void save(GroupBpavawiceOrder bpavawiceOrder);
+    void save(GroupBalanceOrder balanceOrder);
 }

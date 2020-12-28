@@ -50,10 +50,10 @@ import com.mds.group.purchase.shop.service.ManagerService;
 import com.mds.group.purchase.shop.service.ShopFunctionService;
 import com.mds.group.purchase.shop.vo.ShopCreateUpdateVO;
 import com.mds.group.purchase.user.dao.GroupLeaderMapper;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.user.model.GroupLeader;
 import com.mds.group.purchase.user.model.Wxuser;
-import com.mds.group.purchase.user.service.GroupBpavawiceOrderService;
+import com.mds.group.purchase.user.service.GroupBalanceOrderService;
 import com.mds.group.purchase.user.service.GroupLeaderService;
 import com.mds.group.purchase.user.service.WxuserService;
 import com.mds.group.purchase.user.vo.*;
@@ -114,7 +114,7 @@ public class GroupLeaderServiceImpl extends AbstractService<GroupLeader> impleme
     @Resource
     private ShopFunctionService shopFunctionService;
     @Resource
-    private GroupBpavawiceOrderService groupBpavawiceOrderService;
+    private GroupBalanceOrderService groupbalanceOrderService;
     @Resource
     private ActiveDelaySendJobHandler activeDelaySendJobHandler;
 
@@ -291,10 +291,10 @@ public class GroupLeaderServiceImpl extends AbstractService<GroupLeader> impleme
         condition.createCriteria().andIn("groupLeaderId", idsList);
         List<GroupLeader> groupLeaders = tGroupLeaderMapper.selectByCondition(condition);
         if (groupLeaders != null) {
-            List<GroupLeader> havaBpavawice = groupLeaders.stream().filter(obj -> obj.getBrokerage().doubleValue() > 0)
+            List<GroupLeader> havabalance = groupLeaders.stream().filter(obj -> obj.getBrokerage().doubleValue() > 0)
                     .collect(Collectors.toList());
-            if (CollectionUtil.isNotEmpty(havaBpavawice)) {
-                if (havaBpavawice.size() > 1) {
+            if (CollectionUtil.isNotEmpty(havabalance)) {
+                if (havabalance.size() > 1) {
                     throw new ServiceException("部分团长账号有佣金金额,请先结算清金额");
                 } else {
                     throw new ServiceException("此团长账号有佣金金额,请先结算清金额");
@@ -495,25 +495,25 @@ public class GroupLeaderServiceImpl extends AbstractService<GroupLeader> impleme
             if (groupLeader.getBrokerage().doubleValue() < withdrawMoneyVO.getWithdrawMoney().doubleValue()) {
                 throw new ServiceException("佣金不足");
             }
-            List<GroupBpavawiceOrder> groupBpavawiceOrders = groupBpavawiceOrderService
+            List<GroupBalanceOrder> groupbalanceOrders = groupbalanceOrderService
                     .findByGroupLeaderId(groupLeader.getGroupLeaderId());
-            if (CollectionUtil.isNotEmpty(groupBpavawiceOrders)) {
-                double sum = groupBpavawiceOrders.stream()
-                        .mapToDouble(obj -> obj.getOutBpavawice().setScale(2, RoundingMode.HALF_UP).doubleValue()).sum();
+            if (CollectionUtil.isNotEmpty(groupbalanceOrders)) {
+                double sum = groupbalanceOrders.stream()
+                        .mapToDouble(obj -> obj.getOutBalance().setScale(2, RoundingMode.HALF_UP).doubleValue()).sum();
                 if (groupLeader.getBrokerage().doubleValue() - sum < 0) {
                     throw new ServiceException("佣金申请金额已达上限");
                 }
             }
-            GroupBpavawiceOrder bpavawiceOrder = new GroupBpavawiceOrder();
-            bpavawiceOrder.setAppmodelId(withdrawMoneyVO.getAppmodelId());
-            bpavawiceOrder.setApplyforState(0);
-            bpavawiceOrder.setGroupLeaderId(withdrawMoneyVO.getGroupLeaderId());
-            bpavawiceOrder.setOutBpavawice(withdrawMoneyVO.getWithdrawMoney());
-            bpavawiceOrder.setCreateTime(DateUtil.date());
-            bpavawiceOrder.setFormId(withdrawMoneyVO.getFormId());
-            bpavawiceOrder.setOutType(withdrawMoneyVO.getOptionType());
-            bpavawiceOrder.setGroupBpavawiceOrderId(IdGenerateUtils.getItemId());
-            return groupBpavawiceOrderService.save(bpavawiceOrder);
+            GroupBalanceOrder balanceOrder = new GroupBalanceOrder();
+            balanceOrder.setAppmodelId(withdrawMoneyVO.getAppmodelId());
+            balanceOrder.setApplyforState(0);
+            balanceOrder.setGroupLeaderId(withdrawMoneyVO.getGroupLeaderId());
+            balanceOrder.setOutBalance(withdrawMoneyVO.getWithdrawMoney());
+            balanceOrder.setCreateTime(DateUtil.date());
+            balanceOrder.setFormId(withdrawMoneyVO.getFormId());
+            balanceOrder.setOutType(withdrawMoneyVO.getOptionType());
+            balanceOrder.setGroupBalanceOrderId(IdGenerateUtils.getItemId());
+            return groupbalanceOrderService.save(balanceOrder);
         } else {
             throw new ServiceException("非法操作");
         }
@@ -824,7 +824,7 @@ public class GroupLeaderServiceImpl extends AbstractService<GroupLeader> impleme
         //待提现佣金
         myCommissionResult.setNotWithdraw(leader.getBrokerage());
         //已提现佣金
-        myCommissionResult.setWithdraw(groupBpavawiceOrderService.countCumulativeCashWithdrawal(leader.getGroupLeaderId()));
+        myCommissionResult.setWithdraw(groupbalanceOrderService.countCumulativeCashWithdrawal(leader.getGroupLeaderId()));
         //待结算
         BigDecimal settlement = orderDetailService.countSettlementCommission(leader.getGroupLeaderId());
         myCommissionResult.setNotSettlement(settlement);

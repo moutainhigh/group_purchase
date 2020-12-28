@@ -162,7 +162,7 @@ CREATE TABLE `t_agent`  (
   `audit_date` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '审核通过时间',
   `agent_status` int(1) NULL DEFAULT NULL COMMENT '代理人状态   1通过审核，2取消分销商资格(禁用)',
   `appmodel_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '模板id',
-  `agent_bpavawice` double(10, 2) NULL DEFAULT NULL COMMENT '代理消费额度',
+  `agent_balance` double(10, 2) NULL DEFAULT NULL COMMENT '代理消费额度',
   `nike_name` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '微信昵称',
   PRIMARY KEY (`agent_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '代理表' ROW_FORMAT = Dynamic;
@@ -546,7 +546,7 @@ CREATE TABLE `t_manager`  (
   `version_subscript` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '版本下标',
   `mini_code` varchar(168) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '小程序二维码',
   `logo` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '小程序log',
-  `bpavawice` decimal(7, 2) NULL DEFAULT 0.00 COMMENT '余额',
+  `balance` decimal(7, 2) NULL DEFAULT 0.00 COMMENT '余额',
   `flag` tinyint(1) NULL DEFAULT 1 COMMENT '是否缴纳保证金',
   `last_time` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '上次登录时间',
   `del_state` int(1) NULL DEFAULT 0 COMMENT '删除标志',

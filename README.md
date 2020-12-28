@@ -23,12 +23,10 @@ docker-compose up -d
 
 - 打开swagger页面
 
- ```shell script
- docker-compose up -d
- ```
+[http://localhost:8080/group_purchase/swagger-ui.html](http://localhost:8080/group_purchase/swagger-ui.html)
 
 ## 项目介绍
-`group_purchase`项目是一套社区团购系统，包括小程序端及后台管理系统，基于SpringBoot+MyBatis实现，采用Docker
+`group_purchase`是一套社区团购系统，包括小程序端及后台管理系统，基于SpringBoot+MyBatis实现，采用Docker
 容器化部署。包含营销活动、文章管理、财务管理、商品管理、订单管理、购物车、店铺装修、接龙订单、微信群机器人、店铺设置、用户管理等功能
 
 ## 项目演示
@@ -84,6 +82,8 @@ docker-compose up -d
 
 
 ## 架构图
+
+## 关于我们
 
 ## 许可证
 

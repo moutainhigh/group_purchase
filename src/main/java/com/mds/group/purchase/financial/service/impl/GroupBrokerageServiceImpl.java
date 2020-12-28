@@ -25,7 +25,7 @@ import com.mds.group.purchase.financial.model.GroupBrokerage;
 import com.mds.group.purchase.financial.service.GroupBrokerageService;
 import com.mds.group.purchase.order.model.Order;
 import com.mds.group.purchase.order.model.OrderDetail;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.utils.GenSerialNumber;
 import com.mds.group.purchase.utils.ParamUtil;
 import org.springframework.stereotype.Service;
@@ -132,20 +132,20 @@ public class GroupBrokerageServiceImpl extends AbstractService<GroupBrokerage> i
     }
 
     @Override
-    public void save(GroupBpavawiceOrder bpavawiceOrder) {
+    public void save(GroupBalanceOrder balanceOrder) {
         GroupBrokerage groupBrokerage = new GroupBrokerage();
-        groupBrokerage.setAccount(bpavawiceOrder.getOutBpavawice());
+        groupBrokerage.setAccount(balanceOrder.getOutBalance());
         groupBrokerage.setAccountType(GroupBrokerage.Constant.ACCOUNT_TYPE_DISBURSEMENT);
         groupBrokerage.setCreatedTime(DateUtil.now());
-        groupBrokerage.setGroupId(bpavawiceOrder.getGroupLeaderId());
+        groupBrokerage.setGroupId(balanceOrder.getGroupLeaderId());
         groupBrokerage.setModifyTime(DateUtil.now());
-        groupBrokerage.setOrderId(bpavawiceOrder.getGroupBpavawiceOrderId());
+        groupBrokerage.setOrderId(balanceOrder.getGroupBalanceOrderId());
         groupBrokerage.setStatus(GroupBrokerage.Constant.STATUS_COMPLETE);
         groupBrokerage.setType(GroupBrokerage.Constant.TYPE_EXTRACT);
         String serialNumber = GenSerialNumber
-                .initGenSerialNumber(GenSerialNumber.GROUPBROKERAGE, bpavawiceOrder.getAppmodelId()).nextId();
+                .initGenSerialNumber(GenSerialNumber.GROUPBROKERAGE, balanceOrder.getAppmodelId()).nextId();
         groupBrokerage.setSerialNumber(serialNumber);
-        groupBrokerage.setAppmodelId(bpavawiceOrder.getAppmodelId());
+        groupBrokerage.setAppmodelId(balanceOrder.getAppmodelId());
         save(groupBrokerage);
     }
 }

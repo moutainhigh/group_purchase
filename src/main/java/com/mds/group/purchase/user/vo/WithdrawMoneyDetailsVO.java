@@ -31,11 +31,11 @@ import java.util.Date;
 public class WithdrawMoneyDetailsVO {
 
     @ApiModelProperty(value = "审核id")
-    private Long groupBpavawiceOrderId;
+    private Long groupbalanceOrderId;
 
 
     @ApiModelProperty(value = "提现余额")
-    private BigDecimal outBpavawice;
+    private BigDecimal outbalance;
 
     @ApiModelProperty(value = "创建时间")
     private Date createTime;

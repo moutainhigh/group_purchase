@@ -27,16 +27,16 @@ import com.mds.group.purchase.core.AbstractService;
 import com.mds.group.purchase.exception.ServiceException;
 import com.mds.group.purchase.financial.service.FinancialDetailsService;
 import com.mds.group.purchase.financial.service.GroupBrokerageService;
-import com.mds.group.purchase.user.dao.GroupBpavawiceOrderMapper;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.dao.GroupBalanceOrderMapper;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.user.model.GroupLeader;
 import com.mds.group.purchase.user.model.Wxuser;
-import com.mds.group.purchase.user.service.GroupBpavawiceOrderService;
+import com.mds.group.purchase.user.service.GroupBalanceOrderService;
 import com.mds.group.purchase.user.service.GroupLeaderService;
 import com.mds.group.purchase.user.service.WxuserService;
 import com.mds.group.purchase.user.vo.*;
 import com.mds.group.purchase.utils.BeanMapper;
-import com.mds.group.purchase.utils.GroupBpavawiceOrderUtil;
+import com.mds.group.purchase.utils.GroupBalanceOrderUtil;
 import com.mds.group.purchase.utils.ResultPage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -52,14 +52,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 
-/**
- * The type Group bpavawice order service.
- *
- * @author CodeGenerator
- * @date 2018 /11/27
- */
+
 @Service
-public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawiceOrder> implements GroupBpavawiceOrderService {
+public class GroupBalanceOrderServiceImpl extends AbstractService<GroupBalanceOrder> implements GroupBalanceOrderService {
 
     @Resource
     private WxuserService wxuserService;
@@ -68,11 +63,11 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
     @Resource
     private GroupLeaderService groupLeaderService;
     @Resource
-    private GroupBpavawiceOrderUtil groupBpavawiceOrderUtil;
+    private GroupBalanceOrderUtil groupBalanceOrderUtil;
     @Resource
     private FinancialDetailsService financialDetailsService;
     @Resource
-    private GroupBpavawiceOrderMapper tGroupBpavawiceOrderMapper;
+    private GroupBalanceOrderMapper tGroupBalanceOrderMapper;
     @Resource
     private GroupBrokerageService groupBrokerageService;
 
@@ -81,61 +76,61 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
     @Transactional(rollbackFor = Exception.class)
     public int withdrawMoney(WithdrawMoneyVO withdrawMoneyVO) {
         int x = 0;
-        GroupBpavawiceOrder bpavawiceOrder = tGroupBpavawiceOrderMapper
-                .selectByPrimaryKey(withdrawMoneyVO.getGroupBpavawiceOrderId());
-        bpavawiceOrder.setUpdateTime(DateUtil.date());
-        Wxuser wxuser = wxuserService.findByGroupleaderId(bpavawiceOrder.getGroupLeaderId());
+        GroupBalanceOrder balanceOrder = tGroupBalanceOrderMapper
+                .selectByPrimaryKey(withdrawMoneyVO.getGroupbalanceOrderId());
+        balanceOrder.setUpdateTime(DateUtil.date());
+        Wxuser wxuser = wxuserService.findByGroupleaderId(balanceOrder.getGroupLeaderId());
         if (wxuser == null) {
             throw new ServiceException("用户不存在");
         }
         //同意提现
         if (withdrawMoneyVO.getOptionType().equals(1)) {
-            if (bpavawiceOrder.getApplyforState().equals(1)) {
+            if (balanceOrder.getApplyforState().equals(1)) {
                 return 1;
             }
-            bpavawiceOrder.setApplyforState(1);
-            GroupLeader groupLeader = groupLeaderService.findById(bpavawiceOrder.getGroupLeaderId());
-            groupLeader.setBrokerage(NumberUtil.sub(groupLeader.getBrokerage(), bpavawiceOrder.getOutBpavawice()));
+            balanceOrder.setApplyforState(1);
+            GroupLeader groupLeader = groupLeaderService.findById(balanceOrder.getGroupLeaderId());
+            groupLeader.setBrokerage(NumberUtil.sub(groupLeader.getBrokerage(), balanceOrder.getOutBalance()));
             if (groupLeader.getBrokerage().doubleValue() < 0) {
                 throw new ServiceException("团长佣金不足");
             }
             //1-微信钱包
-            if (bpavawiceOrder.getOutType().equals(1)) {
+            if (balanceOrder.getOutType().equals(1)) {
                 //发起付款请求
                 wxServiceUtils.enterprisePayment(withdrawMoneyVO.getAppmodelId(), wxuser.getMiniOpenId(),
-                        bpavawiceOrder.getGroupBpavawiceOrderId().toString(), "",
-                        bpavawiceOrder.getOutBpavawice().setScale(2, BigDecimal.ROUND_HALF_UP).toString(), "团长余额提现",
+                        balanceOrder.getGroupBalanceOrderId().toString(), "",
+                        balanceOrder.getOutBalance().setScale(2, BigDecimal.ROUND_HALF_UP).toString(), "团长余额提现",
                         StringUtils.substring(withdrawMoneyVO.getAppmodelId(), 9,
                                 withdrawMoneyVO.getAppmodelId().length()));
                 //生成佣金明细
-                groupBrokerageService.save(bpavawiceOrder);
+                groupBrokerageService.save(balanceOrder);
                 //提现成功后插入对账单记录
-                financialDetailsService.save(bpavawiceOrder, wxuser);
+                financialDetailsService.save(balanceOrder, wxuser);
                 groupLeaderService.update(groupLeader);
-                x = tGroupBpavawiceOrderMapper.updateByPrimaryKeySelective(bpavawiceOrder);
+                x = tGroupBalanceOrderMapper.updateByPrimaryKeySelective(balanceOrder);
                 //发送提现成功的模板消息
-                groupBpavawiceOrderUtil.sendWithdrawSuccessMsg(bpavawiceOrder, wxuser.getWxuserId());
-            } else if (bpavawiceOrder.getOutType().equals(2)) {
+                groupBalanceOrderUtil.sendWithdrawSuccessMsg(balanceOrder, wxuser.getWxuserId());
+            } else if (balanceOrder.getOutType().equals(2)) {
                 //线下核销
                 //生成佣金明细
-                groupBrokerageService.save(bpavawiceOrder);
+                groupBrokerageService.save(balanceOrder);
                 //提现成功后插入对账单记录
-                financialDetailsService.save(bpavawiceOrder, wxuser);
+                financialDetailsService.save(balanceOrder, wxuser);
                 groupLeaderService.update(groupLeader);
-                x = tGroupBpavawiceOrderMapper.updateByPrimaryKeySelective(bpavawiceOrder);
+                x = tGroupBalanceOrderMapper.updateByPrimaryKeySelective(balanceOrder);
                 //发送提现成功的模板消息
-                groupBpavawiceOrderUtil.sendWithdrawSuccessMsg(bpavawiceOrder, wxuser.getWxuserId());
+                groupBalanceOrderUtil.sendWithdrawSuccessMsg(balanceOrder, wxuser.getWxuserId());
             }
 
             //拒绝提现
         } else if (withdrawMoneyVO.getOptionType().equals(WithdrawMoneyVO.REFUSE)) {
-            if (bpavawiceOrder.getApplyforState().equals(WithdrawMoneyVO.REFUSE)) {
+            if (balanceOrder.getApplyforState().equals(WithdrawMoneyVO.REFUSE)) {
                 return 1;
             }
-            bpavawiceOrder.setApplyforState(2);
-            x = tGroupBpavawiceOrderMapper.updateByPrimaryKeySelective(bpavawiceOrder);
+            balanceOrder.setApplyforState(2);
+            x = tGroupBalanceOrderMapper.updateByPrimaryKeySelective(balanceOrder);
             //发送提现失败的模板消息
-            groupBpavawiceOrderUtil.sendWithdrawFailMsg(bpavawiceOrder, wxuser.getWxuserId());
+            groupBalanceOrderUtil.sendWithdrawFailMsg(balanceOrder, wxuser.getWxuserId());
         } else {
             throw new ServiceException("非法操作");
         }
@@ -153,49 +148,49 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
         } else {
             PageHelper.startPage(pageNum, pageSize, "update_time desc");
         }
-        List<GroupBpavawiceOrder> groupBpavawiceOrders = tGroupBpavawiceOrderMapper
+        List<GroupBalanceOrder> groupbalanceOrders = tGroupBalanceOrderMapper
                 .selectWithdrawMoneyDetails(searchType, groupLeaderId, appmodelId);
         ResultPage<List<WithdrawMoneyDetailsVO>> resultPage = new ResultPage<>();
-        resultPage.setTotle(new PageInfo<>(groupBpavawiceOrders).getTotal());
+        resultPage.setTotle(new PageInfo<>(groupbalanceOrders).getTotal());
         List<WithdrawMoneyDetailsVO> withdrawMoneyDetailsVOS = BeanMapper
-                .mapList(groupBpavawiceOrders, WithdrawMoneyDetailsVO.class);
+                .mapList(groupbalanceOrders, WithdrawMoneyDetailsVO.class);
         for (WithdrawMoneyDetailsVO withdrawMoneyDetailsVO : withdrawMoneyDetailsVOS) {
             withdrawMoneyDetailsVO.setCreateTimeValue(withdrawMoneyDetailsVO.getCreateTime().getTime());
         }
         //将团长信息封装进结果集
-        //List<String> groupIds = groupBpavawiceOrders.stream().map(GroupBpavawiceOrder::getGroupLeaderId).collect
+        //List<String> groupIds = groupbalanceOrders.stream().map(GroupbalanceOrder::getGroupLeaderId).collect
         // (Collectors.toList());
-        //groupBpavawiceOrderUtil.packageResults(groupIds, withdrawMoneyDetailsVOS);
+        //groupbalanceOrderUtil.packageResults(groupIds, withdrawMoneyDetailsVOS);
         resultPage.setList(withdrawMoneyDetailsVOS);
         return resultPage;
     }
 
     @Override
-    public WithdrawMoneyDetailVO withdrawMoneyDetail(Long groupBpavawiceOrderId, String appmodelId) {
-        GroupBpavawiceOrder bpavawiceOrder = tGroupBpavawiceOrderMapper.selectByPrimaryKey(groupBpavawiceOrderId);
-        WithdrawMoneyDetailVO detailVO = BeanMapper.map(bpavawiceOrder, WithdrawMoneyDetailVO.class);
+    public WithdrawMoneyDetailVO withdrawMoneyDetail(Long groupbalanceOrderId, String appmodelId) {
+        GroupBalanceOrder balanceOrder = tGroupBalanceOrderMapper.selectByPrimaryKey(groupbalanceOrderId);
+        WithdrawMoneyDetailVO detailVO = BeanMapper.map(balanceOrder, WithdrawMoneyDetailVO.class);
         //将团长信息封装进结果集
-        groupBpavawiceOrderUtil.packageResult(bpavawiceOrder.getGroupLeaderId(), detailVO);
+        groupBalanceOrderUtil.packageResult(balanceOrder.getGroupLeaderId(), detailVO);
         return detailVO;
     }
 
     @Override
     public int withdrawMoneyRemark(RemarkVO userRemarkVO) {
-        List<GroupBpavawiceOrder> groupBpavawiceOrders = tGroupBpavawiceOrderMapper.selectByIds(userRemarkVO.getIds());
+        List<GroupBalanceOrder> groupbalanceOrders = tGroupBalanceOrderMapper.selectByIds(userRemarkVO.getIds());
         AtomicInteger i = new AtomicInteger(0);
         if (userRemarkVO.getCoverType() == 0) {
             //不覆盖原有备注,过滤出非空备注的用户
-            List<GroupBpavawiceOrder> collect = groupBpavawiceOrders.stream()
+            List<GroupBalanceOrder> collect = groupbalanceOrders.stream()
                     .filter(obj -> !StringUtils.isNotBlank(obj.getRemark())).collect(Collectors.toList());
             collect.forEach(obj -> {
                 obj.setRemark(userRemarkVO.getRemark());
-                i.set(tGroupBpavawiceOrderMapper.updateByPrimaryKeySelective(obj));
+                i.set(tGroupBalanceOrderMapper.updateByPrimaryKeySelective(obj));
             });
         }
         if (userRemarkVO.getCoverType() == 1) {
-            groupBpavawiceOrders.forEach(obj -> {
+            groupbalanceOrders.forEach(obj -> {
                 obj.setRemark(userRemarkVO.getRemark());
-                i.set(tGroupBpavawiceOrderMapper.updateByPrimaryKeySelective(obj));
+                i.set(tGroupBalanceOrderMapper.updateByPrimaryKeySelective(obj));
             });
         }
         return i.get();
@@ -203,7 +198,7 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
 
     @Override
     public List<FinanceManagerVO> findanceManager(Integer pageNum, Integer pageSize, Integer searchType,
-                                                  String groupBpavawiceOrderId, String groupName, String createTime,
+                                                  String groupbalanceOrderId, String groupName, String createTime,
                                                   String updateTime, String appmodelId,
                                                   HttpServletResponse response) {
         Map<String, Object> paramMap = new HashMap<>(8);
@@ -216,8 +211,8 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
             }
             paramMap.put("groupName", name);
         }
-        if (StringUtils.isNotBlank(groupBpavawiceOrderId)) {
-            paramMap.put("groupBpavawiceOrderId", groupBpavawiceOrderId);
+        if (StringUtils.isNotBlank(groupbalanceOrderId)) {
+            paramMap.put("groupbalanceOrderId", groupbalanceOrderId);
         }
         if (StringUtils.isNotBlank(createTime)) {
             String[] split = createTime.split(",");
@@ -240,7 +235,7 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
             PageHelper.startPage(pageNum, pageSize, "update_time desc");
         }
 
-        List<FinanceManagerVO> financeManagerVOS = tGroupBpavawiceOrderMapper.selectFinanceManager(paramMap);
+        List<FinanceManagerVO> financeManagerVOS = tGroupBalanceOrderMapper.selectFinanceManager(paramMap);
         if (financeManagerVOS == null || financeManagerVOS.size() == 0) {
             return new ArrayList<>();
         }
@@ -249,37 +244,37 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
     }
 
     @Override
-    public List<GroupBpavawiceOrder> findByGroupLeaderId(String groupLeaderId) {
-        return tGroupBpavawiceOrderMapper.selectByGroupLeaderId(groupLeaderId);
+    public List<GroupBalanceOrder> findByGroupLeaderId(String groupLeaderId) {
+        return tGroupBalanceOrderMapper.selectByGroupLeaderId(groupLeaderId);
     }
 
     @Override
-    public void financeManagerExport(List<Long> groupBpavawiceOrderIds, HttpServletResponse response) {
-        String ids = groupBpavawiceOrderIds.stream().map(Object::toString).collect(Collectors.joining(","));
-        List<GroupBpavawiceOrder> groupBpavawiceOrders = tGroupBpavawiceOrderMapper.selectByIds(ids);
-        if (groupBpavawiceOrders == null || groupBpavawiceOrders.size() == 0) {
+    public void financeManagerExport(List<Long> groupbalanceOrderIds, HttpServletResponse response) {
+        String ids = groupbalanceOrderIds.stream().map(Object::toString).collect(Collectors.joining(","));
+        List<GroupBalanceOrder> groupbalanceOrders = tGroupBalanceOrderMapper.selectByIds(ids);
+        if (groupbalanceOrders == null || groupbalanceOrders.size() == 0) {
             throw new ServiceException("数据为空");
         }
-        List<FinanceManagerVO> financeManagerVOS = BeanMapper.mapList(groupBpavawiceOrders, FinanceManagerVO.class);
+        List<FinanceManagerVO> financeManagerVOS = BeanMapper.mapList(groupbalanceOrders, FinanceManagerVO.class);
         getGroupInfo(financeManagerVOS);
         exportXXL(response, financeManagerVOS);
     }
 
     @Override
-    public void deleteGroupBpavawiceOrder(List<Long> groupBpavawiceOrderIds) {
-        Condition condition = new Condition(GroupBpavawiceOrder.class);
-        condition.createCriteria().andIn("groupBpavawiceOrderId", groupBpavawiceOrderIds)
+    public void deleteGroupbalanceOrder(List<Long> groupbalanceOrderIds) {
+        Condition condition = new Condition(GroupBalanceOrder.class);
+        condition.createCriteria().andIn("groupbalanceOrderId", groupbalanceOrderIds)
                 .andIn("applyforState", Arrays.asList(0, 1));
-        if (tGroupBpavawiceOrderMapper.selectCountByCondition(condition) > 0) {
+        if (tGroupBalanceOrderMapper.selectCountByCondition(condition) > 0) {
             throw new ServiceException("不可删除待审核或已到账的记录");
         }
-        String ids = groupBpavawiceOrderIds.stream().map(Object::toString).collect(Collectors.joining(","));
-        tGroupBpavawiceOrderMapper.deleteByIds(ids);
+        String ids = groupbalanceOrderIds.stream().map(Object::toString).collect(Collectors.joining(","));
+        tGroupBalanceOrderMapper.deleteByIds(ids);
     }
 
     @Override
     public BigDecimal countCumulativeCashWithdrawal(String groupLeaderId) {
-        return tGroupBpavawiceOrderMapper.countCumulativeCashWithdrawal(groupLeaderId);
+        return tGroupBalanceOrderMapper.countCumulativeCashWithdrawal(groupLeaderId);
     }
 
     /**
@@ -288,7 +283,7 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
      * @param financeManagerVOS
      */
     private void getGroupInfo(List<FinanceManagerVO> financeManagerVOS) {
-        List<String> groupIds = financeManagerVOS.stream().map(GroupBpavawiceOrder::getGroupLeaderId)
+        List<String> groupIds = financeManagerVOS.stream().map(GroupBalanceOrder::getGroupLeaderId)
                 .collect(Collectors.toList());
         Map<String, GroupLeader> groupLeaderMap = groupLeaderService.findByGroupleaderIds(groupIds).stream()
                 .collect(Collectors.toMap(GroupLeader::getGroupLeaderId, v -> v));
@@ -303,12 +298,12 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
 
     private void exportXXL(HttpServletResponse response, List<FinanceManagerVO> financeManagerVOS) {
         ExcelWriter writer = ExcelUtil.getBigWriter();
-        writer.addHeaderAlias("groupBpavawiceOrderId", "交易订单");
+        writer.addHeaderAlias("groupbalanceOrderId", "交易订单");
         writer.setColumnWidth(0, 20);
         writer.addHeaderAlias("groupName", "姓名");
         writer.addHeaderAlias("phone", "手机号");
         writer.setColumnWidth(2, 15);
-        writer.addHeaderAlias("outBpavawice", "金额");
+        writer.addHeaderAlias("outbalance", "金额");
         writer.addHeaderAlias("createTime", "提交时间");
         writer.setColumnWidth(4, 20);
         writer.addHeaderAlias("outType", "提现方式");
@@ -318,10 +313,10 @@ public class GroupBpavawiceOrderServiceImpl extends AbstractService<GroupBpavawi
         ArrayList<Map<String, Object>> rows = new ArrayList<>();
         for (FinanceManagerVO financeManagerVO : financeManagerVOS) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("groupBpavawiceOrderId", financeManagerVO.getGroupBpavawiceOrderId().toString());
+            map.put("groupbalanceOrderId", financeManagerVO.getGroupBalanceOrderId().toString());
             map.put("groupName", financeManagerVO.getGroupName());
             map.put("phone", financeManagerVO.getPhone());
-            map.put("outBpavawice", financeManagerVO.getOutBpavawice().toString());
+            map.put("outbalance", financeManagerVO.getOutBalance().toString());
             map.put("createTime", DateUtil.format(financeManagerVO.getCreateTime(), " yyyy-MM-dd HH:mm"));
             if (financeManagerVO.getOutType().equals(1)) {
                 map.put("outType", "微信钱包");

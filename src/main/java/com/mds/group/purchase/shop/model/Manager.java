@@ -115,7 +115,7 @@ public class Manager {
     /**
      * 余额
      */
-    private BigDecimal bpavawice;
+    private BigDecimal balance;
 
     /**
      * 是否缴纳保证金

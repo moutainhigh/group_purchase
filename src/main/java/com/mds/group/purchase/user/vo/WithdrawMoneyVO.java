@@ -40,7 +40,7 @@ public class WithdrawMoneyVO {
 
     @ApiModelProperty(value = "团长余额提现id")
     @NotNull
-    private Long groupBpavawiceOrderId;
+    private Long groupbalanceOrderId;
 
     @ApiModelProperty(value = "操作类型  optionType 1-同意  2-拒绝")
     @NotNull

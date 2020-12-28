@@ -66,7 +66,7 @@ import com.mds.group.purchase.user.model.Consignee;
 import com.mds.group.purchase.user.model.GroupLeader;
 import com.mds.group.purchase.user.model.Wxuser;
 import com.mds.group.purchase.user.service.ConsigneeService;
-import com.mds.group.purchase.user.service.GroupBpavawiceOrderService;
+import com.mds.group.purchase.user.service.GroupBalanceOrderService;
 import com.mds.group.purchase.user.service.GroupLeaderService;
 import com.mds.group.purchase.user.service.WxuserService;
 import com.mds.group.purchase.user.vo.UserInfoVO;
@@ -132,7 +132,7 @@ public class OrderServiceImpl extends AbstractService<Order> implements OrderSer
     @Resource
     private OrderSendBillMappingService orderSendBillMappingService;
     @Resource
-    private GroupBpavawiceOrderService groupBpavawiceOrderService;
+    private GroupBalanceOrderService groupbalanceOrderService;
     @Resource
     private AfterSaleOrderMapper afterSaleOrderMapper;
     @Resource
@@ -1124,7 +1124,7 @@ public class OrderServiceImpl extends AbstractService<Order> implements OrderSer
         //今日佣金
         workbenchResult.setTodayCommission(todayCommission);
         //累积提现
-        workbenchResult.setCumulativeCashWithdrawal(groupBpavawiceOrderService.countCumulativeCashWithdrawal(groupLeader.getGroupLeaderId()));
+        workbenchResult.setCumulativeCashWithdrawal(groupbalanceOrderService.countCumulativeCashWithdrawal(groupLeader.getGroupLeaderId()));
         //我的客户数
         List<Wxuser> wxusers = wxuserService.findCustomersByGroupLeaderId(groupLeader.getGroupLeaderId(), null);
         workbenchResult.setCustomers(wxusers.size());

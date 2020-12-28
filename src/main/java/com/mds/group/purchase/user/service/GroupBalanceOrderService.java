@@ -17,7 +17,7 @@
 package com.mds.group.purchase.user.service;
 
 import com.mds.group.purchase.core.Service;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.user.vo.*;
 import com.mds.group.purchase.utils.ResultPage;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author pavawi
  */
-public interface GroupBpavawiceOrderService extends Service<GroupBpavawiceOrder> {
+public interface GroupBalanceOrderService extends Service<GroupBalanceOrder> {
 
     /**
      * 提现同意/拒绝
@@ -58,11 +58,11 @@ public interface GroupBpavawiceOrderService extends Service<GroupBpavawiceOrder>
     /**
      * 查询提现记录详情
      *
-     * @param groupBpavawiceOrderId the group bpavawice order id
+     * @param groupbalanceOrderId the group balance order id
      * @param appmodelId          the appmodel id
      * @return withdraw money detail vo
      */
-    WithdrawMoneyDetailVO withdrawMoneyDetail(Long groupBpavawiceOrderId, String appmodelId);
+    WithdrawMoneyDetailVO withdrawMoneyDetail(Long groupbalanceOrderId, String appmodelId);
 
 
     /**
@@ -79,7 +79,7 @@ public interface GroupBpavawiceOrderService extends Service<GroupBpavawiceOrder>
      * @param pageNum             the page num
      * @param pageSize            the page size
      * @param searchType          the search type
-     * @param groupBpavawiceOrderId the group bpavawice order id
+     * @param groupbalanceOrderId the group balance order id
      * @param groupName           the group name
      * @param createTime          the create time
      * @param updateTime          the update time
@@ -88,7 +88,7 @@ public interface GroupBpavawiceOrderService extends Service<GroupBpavawiceOrder>
      * @return list list
      */
     List<FinanceManagerVO> findanceManager(Integer pageNum, Integer pageSize, Integer searchType,
-                                           String groupBpavawiceOrderId, String groupName,
+                                           String groupbalanceOrderId, String groupName,
                                            String createTime, String updateTime, String appmodelId,
                                            HttpServletResponse response);
 
@@ -98,22 +98,22 @@ public interface GroupBpavawiceOrderService extends Service<GroupBpavawiceOrder>
      * @param groupLeaderId the group leader id
      * @return list list
      */
-    List<GroupBpavawiceOrder> findByGroupLeaderId(String groupLeaderId);
+    List<GroupBalanceOrder> findByGroupLeaderId(String groupLeaderId);
 
     /**
      * Finance manager export.
      *
-     * @param groupBpavawiceOrderIds the group bpavawice order ids
+     * @param groupbalanceOrderIds the group balance order ids
      * @param response             the response
      */
-    void financeManagerExport(List<Long> groupBpavawiceOrderIds, HttpServletResponse response);
+    void financeManagerExport(List<Long> groupbalanceOrderIds, HttpServletResponse response);
 
     /**
      * 删除已关闭的财务管理记录
      *
-     * @param groupBpavawiceOrderIds the group bpavawice order ids
+     * @param groupbalanceOrderIds the group balance order ids
      */
-    void deleteGroupBpavawiceOrder(List<Long> groupBpavawiceOrderIds);
+    void deleteGroupbalanceOrder(List<Long> groupbalanceOrderIds);
 
     /**
      * Count cumulative cash withdrawal big decimal.

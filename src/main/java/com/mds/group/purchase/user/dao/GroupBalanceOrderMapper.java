@@ -17,7 +17,7 @@
 package com.mds.group.purchase.user.dao;
 
 import com.mds.group.purchase.core.Mapper;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.user.vo.FinanceManagerVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The interface Group bpavawice order mapper.
+ * The interface Group balance order mapper.
  *
  * @author pavawi
  */
-public interface GroupBpavawiceOrderMapper extends Mapper<GroupBpavawiceOrder> {
+public interface GroupBalanceOrderMapper extends Mapper<GroupBalanceOrder> {
 
     /**
      * 查询某个团长提现记录
@@ -40,7 +40,7 @@ public interface GroupBpavawiceOrderMapper extends Mapper<GroupBpavawiceOrder> {
      * @param appmodelId    the appmodel id
      * @return list list
      */
-    List<GroupBpavawiceOrder> selectWithdrawMoneyDetails(@Param("searchType") Integer searchType, @Param("groupLeaderId"
+    List<GroupBalanceOrder> selectWithdrawMoneyDetails(@Param("searchType") Integer searchType, @Param("groupLeaderId"
     ) String groupLeaderId, @Param("appmodelId") String appmodelId);
 
     /**
@@ -57,7 +57,7 @@ public interface GroupBpavawiceOrderMapper extends Mapper<GroupBpavawiceOrder> {
      * @param groupLeaderId the group leader id
      * @return list list
      */
-    List<GroupBpavawiceOrder> selectByGroupLeaderId(@Param("groupLeaderId") String groupLeaderId);
+    List<GroupBalanceOrder> selectByGroupLeaderId(@Param("groupLeaderId") String groupLeaderId);
 
     /**
      * 查询团长累计提现

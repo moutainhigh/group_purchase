@@ -19,7 +19,7 @@ package com.mds.group.purchase.financial.service;
 import com.mds.group.purchase.core.Service;
 import com.mds.group.purchase.financial.model.FinancialDetails;
 import com.mds.group.purchase.order.model.Order;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.user.model.Wxuser;
 
 import java.util.List;
@@ -68,8 +68,8 @@ public interface FinancialDetailsService extends Service<FinancialDetails> {
     /**
      * 团长提现成功后插入对账单明细
      *
-     * @param groupBpavawiceOrder 团长提现订单
+     * @param groupbalanceOrder 团长提现订单
      * @param wxuser            用户信息
      */
-    void save(GroupBpavawiceOrder groupBpavawiceOrder, Wxuser wxuser);
+    void save(GroupBalanceOrder groupbalanceOrder, Wxuser wxuser);
 }

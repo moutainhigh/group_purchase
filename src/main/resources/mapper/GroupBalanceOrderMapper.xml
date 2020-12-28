@@ -16,10 +16,10 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mds.group.purchase.user.dao.GroupBpavawiceOrderMapper">
-    <resultMap id="BaseResultMap" type="com.mds.group.purchase.user.model.GroupBpavawiceOrder">
-        <id column="group_bpavawice_order_id" jdbcType="BIGINT" property="groupBpavawiceOrderId"/>
-        <result column="out_bpavawice" jdbcType="DECIMAL" property="outBpavawice"/>
+<mapper namespace="com.mds.group.purchase.user.dao.GroupBalanceOrderMapper">
+    <resultMap id="BaseResultMap" type="com.mds.group.purchase.user.model.GroupBalanceOrder">
+        <id column="group_balance_order_id" jdbcType="BIGINT" property="groupBalanceOrderId"/>
+        <result column="out_balance" jdbcType="DECIMAL" property="outBalance"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="group_leader_id" jdbcType="VARCHAR" property="groupLeaderId"/>
@@ -35,12 +35,12 @@
 
 
     <sql id="Base_Column_List">
-        group_bpavawice_order_id,out_bpavawice,create_time,group_leader_id,appmodel_id,out_type,form_id,applyfor_state,update_time,remark
+        group_balance_order_id,out_balance,create_time,group_leader_id,appmodel_id,out_type,form_id,applyfor_state,update_time,remark
     </sql>
     <select id="selectWithdrawMoneyDetails" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_group_bpavawice_order
+        from t_group_balance_order
         where
         group_leader_id = #{groupLeaderId}
         and appmodel_id = #{appmodelId}
@@ -52,7 +52,7 @@
     <select id="selectFinanceManager" resultMap="FinanceManagerVOMap">
         select
         <include refid="Base_Column_List"/>
-        from t_group_bpavawice_order
+        from t_group_balance_order
         where
         appmodel_id = #{appmodelId}
         and applyfor_state = #{searchType}
@@ -65,8 +65,8 @@
             group_name like #{groupName}
             )
         </if>
-        <if test="groupBpavawiceOrderId != null">
-            and group_bpavawice_order_id = #{groupBpavawiceOrderId}
+        <if test="groupbalanceOrderId != null">
+            and group_balance_order_id = #{groupbalanceOrderId}
         </if>
         <if test="startCreateTime != null">
             and create_time > #{startCreateTime}
@@ -84,16 +84,16 @@
     <select id="selectByGroupLeaderId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_group_bpavawice_order
+        from t_group_balance_order
         where
         group_leader_id = #{groupLeaderId}
         and applyfor_state = 0
     </select>
     <select id="countCumulativeCashWithdrawal" resultType="java.math.BigDecimal">
         SELECT
-            sum( out_bpavawice )
+            sum( out_balance )
         FROM
-            t_group_bpavawice_order
+            t_group_balance_order
         WHERE
             group_leader_id = #{groupLeaderId}
             AND applyfor_state = 1

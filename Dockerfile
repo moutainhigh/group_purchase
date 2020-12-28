@@ -1,7 +1,10 @@
-FROM java-font:8-jre-alpine
-MAINTAINER whh
-ENV TZ='Asia/Shanghai'
-VOLUME /tmp
-RUN  echo 'Asia/Shanghai' > /etc/timezone
-ADD ./target/groupmall.jar groupmall.jar
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/groupmall.jar"]
+# 该镜像需要依赖的基础镜像
+FROM java:8
+# 将当前目录下的jar包复制到docker容器的/目录下
+ADD ./target/*.jar app.jar
+# 声明服务运行在8088端口
+EXPOSE 8088
+# 指定docker容器启动时运行jar包
+ENTRYPOINT ["java", "-jar","/app.jar"]
+# 指定维护者的名字
+MAINTAINER pavawi

@@ -16,7 +16,7 @@
 
 package com.mds.group.purchase.user.vo;
 
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class FinanceManagerVO extends GroupBpavawiceOrder {
+public class FinanceManagerVO extends GroupBalanceOrder {
 
     @ApiModelProperty(value = "团长名称")
     private String groupName;

@@ -20,7 +20,7 @@ import com.github.pagehelper.PageInfo;
 import com.mds.group.purchase.core.CodeMsg;
 import com.mds.group.purchase.core.Result;
 import com.mds.group.purchase.exception.ServiceException;
-import com.mds.group.purchase.user.service.GroupBpavawiceOrderService;
+import com.mds.group.purchase.user.service.GroupBalanceOrderService;
 import com.mds.group.purchase.user.service.GroupLeaderService;
 import com.mds.group.purchase.user.vo.*;
 import com.mds.group.purchase.utils.ResultPage;
@@ -51,7 +51,7 @@ public class GroupLeaderController {
     @Resource
     private GroupLeaderService groupLeaderService;
     @Resource
-    private GroupBpavawiceOrderService groupBpavawiceOrderService;
+    private GroupBalanceOrderService groupbalanceOrderService;
 
     /**
      * 申请成为团长|新增团长|修改
@@ -225,7 +225,7 @@ public class GroupLeaderController {
             @RequestHeader @NotBlank(message = "appmodelId不能为空") @Size(max = 27, min = 27, message = "商品标示错误") String appmodelId,
             @RequestBody @Valid WithdrawMoneyVO withdrawMoneyVO) {
         withdrawMoneyVO.setAppmodelId(appmodelId);
-        int sum = groupBpavawiceOrderService.withdrawMoney(withdrawMoneyVO);
+        int sum = groupbalanceOrderService.withdrawMoney(withdrawMoneyVO);
         if (sum > 0) {
             return Result.success();
         }
@@ -238,7 +238,7 @@ public class GroupLeaderController {
      * @param pageNum             the page num
      * @param pageSize            the page size
      * @param searchType          the search type
-     * @param groupBpavawiceOrderId the group bpavawice order id
+     * @param groupbalanceOrderId the group balance order id
      * @param groupName           the group name
      * @param createTime          the create time
      * @param updateTime          the update time
@@ -252,14 +252,14 @@ public class GroupLeaderController {
                                                              @RequestParam Integer pageSize,
                                                              @RequestParam @ApiParam(value = "搜索类型  0-待审核  1-已到账  " +
                                                                      "2-已关闭 ", required = true) @NotNull Integer searchType,
-                                                             @RequestParam(required = false) @ApiParam(value = "订单id") String groupBpavawiceOrderId,
+                                                             @RequestParam(required = false) @ApiParam(value = "订单id") String groupbalanceOrderId,
                                                              @RequestParam(required = false) @ApiParam(value = "团长名称") String groupName,
                                                              @RequestParam(required = false) @ApiParam(value = "提交时间") String createTime,
                                                              @RequestParam(required = false) @ApiParam(value = "到账时间") String updateTime,
                                                              @RequestHeader @NotBlank(message = "appmodelId不能为空") @Size(max = 27, min = 27, message = "商品标示错误") String appmodelId,
                                                              HttpServletResponse response) {
-        List<FinanceManagerVO> financeManagerVOS = groupBpavawiceOrderService
-                .findanceManager(pageNum, pageSize, searchType, groupBpavawiceOrderId, groupName, createTime, updateTime,
+        List<FinanceManagerVO> financeManagerVOS = groupbalanceOrderService
+                .findanceManager(pageNum, pageSize, searchType, groupbalanceOrderId, groupName, createTime, updateTime,
                         appmodelId, response);
         PageInfo<FinanceManagerVO> financeManagerVOPageInfo = new PageInfo<>(financeManagerVOS);
         return Result.success(financeManagerVOPageInfo);
@@ -268,25 +268,25 @@ public class GroupLeaderController {
     /**
      * Finance manager.
      *
-     * @param groupBpavawiceOrderIds the group bpavawice order ids
+     * @param groupbalanceOrderIds the group balance order ids
      * @param response             the response
      */
     @PostMapping("/v1/finance/manager/export")
     @ApiOperation(value = "财务管理导出", tags = "查询接口")
-    public void financeManager(@RequestBody @NotNull List<Long> groupBpavawiceOrderIds, HttpServletResponse response) {
-        groupBpavawiceOrderService.financeManagerExport(groupBpavawiceOrderIds, response);
+    public void financeManager(@RequestBody @NotNull List<Long> groupbalanceOrderIds, HttpServletResponse response) {
+        groupbalanceOrderService.financeManagerExport(groupbalanceOrderIds, response);
     }
 
     /**
-     * Delete group bpavawice order result.
+     * Delete group balance order result.
      *
-     * @param groupBpavawiceOrderIds the group bpavawice order ids
+     * @param groupbalanceOrderIds the group balance order ids
      * @return the result
      */
     @PostMapping("/v1/del")
     @ApiOperation(value = "删除已关闭的提现申请记录", tags = "查询接口")
-    public Result deleteGroupBpavawiceOrder(@RequestBody @NotNull List<Long> groupBpavawiceOrderIds) {
-        groupBpavawiceOrderService.deleteGroupBpavawiceOrder(groupBpavawiceOrderIds);
+    public Result deleteGroupbalanceOrder(@RequestBody @NotNull List<Long> groupbalanceOrderIds) {
+        groupbalanceOrderService.deleteGroupbalanceOrder(groupbalanceOrderIds);
         return Result.success();
     }
 
@@ -314,7 +314,7 @@ public class GroupLeaderController {
                                                                                          "appmodelId不能为空") @Size(max
                                                                                          = 27, min = 27, message =
                                                                                          "商品标示错误") String appmodelId) {
-        ResultPage<List<WithdrawMoneyDetailsVO>> listResultPage = groupBpavawiceOrderService
+        ResultPage<List<WithdrawMoneyDetailsVO>> listResultPage = groupbalanceOrderService
                 .withdrawMoneyDetails(pageNum, pageSize, searchType, groupLeaderId, appmodelId);
         return Result.success(listResultPage);
     }
@@ -322,17 +322,17 @@ public class GroupLeaderController {
     /**
      * Withdraw money detail result.
      *
-     * @param groupBpavawiceOrderId the group bpavawice order id
+     * @param groupbalanceOrderId the group balance order id
      * @param appmodelId          the appmodel id
      * @return the result
      */
     @GetMapping("/v1/withdraw/money/detail")
     @ApiOperation(value = "提现记录详情", tags = "查询接口")
     public Result<WithdrawMoneyDetailVO> withdrawMoneyDetail(
-            @RequestParam(required = false) @ApiParam(value = "审核id") Long groupBpavawiceOrderId,
+            @RequestParam(required = false) @ApiParam(value = "审核id") Long groupbalanceOrderId,
             @RequestHeader @NotBlank(message = "appmodelId不能为空") @Size(max = 27, min = 27, message = "商品标示错误") String appmodelId) {
-        WithdrawMoneyDetailVO withdrawMoneyDetailVO = groupBpavawiceOrderService
-                .withdrawMoneyDetail(groupBpavawiceOrderId, appmodelId);
+        WithdrawMoneyDetailVO withdrawMoneyDetailVO = groupbalanceOrderService
+                .withdrawMoneyDetail(groupbalanceOrderId, appmodelId);
         return Result.success(withdrawMoneyDetailVO);
     }
 
@@ -384,7 +384,7 @@ public class GroupLeaderController {
     @PutMapping("/v1/withdraw/money/remark")
     @ApiOperation(value = "团长提现记录备注", tags = "更新接口")
     public Result withdrawMoneyRemark(@RequestBody @Valid RemarkVO userRemarkVO) {
-        int sum = groupBpavawiceOrderService.withdrawMoneyRemark(userRemarkVO);
+        int sum = groupbalanceOrderService.withdrawMoneyRemark(userRemarkVO);
         if (sum > 0) {
             return Result.success();
         }

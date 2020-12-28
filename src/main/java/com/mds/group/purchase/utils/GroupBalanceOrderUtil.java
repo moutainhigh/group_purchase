@@ -23,7 +23,7 @@ import com.mds.group.purchase.constant.ActiviMqQueueName;
 import com.mds.group.purchase.constant.RedisPrefix;
 import com.mds.group.purchase.constant.TemplateMsgType;
 import com.mds.group.purchase.jobhandler.ActiveDelaySendJobHandler;
-import com.mds.group.purchase.user.model.GroupBpavawiceOrder;
+import com.mds.group.purchase.user.model.GroupBalanceOrder;
 import com.mds.group.purchase.user.model.GroupLeader;
 import com.mds.group.purchase.user.service.GroupLeaderService;
 import com.mds.group.purchase.user.vo.WithdrawMoneyDetailsVO;
@@ -37,12 +37,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * The type Group bpavawice order util.
+ * The type Group balance order util.
  *
  * @author pavawi
  */
 @Component
-public class GroupBpavawiceOrderUtil {
+public class GroupBalanceOrderUtil {
 
     @Resource
     private GroupLeaderService groupLeaderService;
@@ -90,12 +90,12 @@ public class GroupBpavawiceOrderUtil {
     /**
      * Send withdraw success msg.
      *
-     * @param bpavawiceOrder the bpavawice order
+     * @param balanceOrder the balance order
      * @param wxuserId     the wxuser id
      */
-    public void sendWithdrawSuccessMsg(GroupBpavawiceOrder bpavawiceOrder, Long wxuserId) {
+    public void sendWithdrawSuccessMsg(GroupBalanceOrder balanceOrder, Long wxuserId) {
         String key =
-                GroupMallProperties.getRedisPrefix() + bpavawiceOrder.getAppmodelId() + RedisPrefix.FROMID + wxuserId;
+                GroupMallProperties.getRedisPrefix() + balanceOrder.getAppmodelId() + RedisPrefix.FROMID + wxuserId;
         List<String> formIds = (List<String>) redisTemplate.opsForValue().get(key);
         if (CollectionUtil.isNotEmpty(formIds)) {
             String formId = formIds.get(0);
@@ -103,16 +103,16 @@ public class GroupBpavawiceOrderUtil {
             redisTemplate.opsForValue().set(key, formIds);
             Map<String, Object> map = new HashMap<>(16);
             map.put("formId", formId);
-            map.put("appmodelId", bpavawiceOrder.getAppmodelId());
+            map.put("appmodelId", balanceOrder.getAppmodelId());
             //提现申请时间
-            map.put("time", bpavawiceOrder.getCreateTime());
-            map.put("withdrawAccount", bpavawiceOrder.getOutBpavawice());
-            map.put("incomeAccount", bpavawiceOrder.getOutBpavawice());
+            map.put("time", balanceOrder.getCreateTime());
+            map.put("withdrawAccount", balanceOrder.getOutBalance());
+            map.put("incomeAccount", balanceOrder.getOutBalance());
             map.put("wxuserId", wxuserId);
             map.put("type", TemplateMsgType.WITHDRAWSUCCESS);
             activeDelaySendJobHandler
                     .savaTask(JSON.toJSONString(map), ActiviMqQueueName.ORDER_MINIPROGRAM_TEMPLATE_MESSAGE, 0L,
-                            bpavawiceOrder.getAppmodelId(), false);
+                            balanceOrder.getAppmodelId(), false);
         }
     }
 
@@ -120,12 +120,12 @@ public class GroupBpavawiceOrderUtil {
     /**
      * Send withdraw fail msg.
      *
-     * @param bpavawiceOrder the bpavawice order
+     * @param balanceOrder the balance order
      * @param wxuserId     the wxuser id
      */
-    public void sendWithdrawFailMsg(GroupBpavawiceOrder bpavawiceOrder, Long wxuserId) {
+    public void sendWithdrawFailMsg(GroupBalanceOrder balanceOrder, Long wxuserId) {
         String key =
-                GroupMallProperties.getRedisPrefix() + bpavawiceOrder.getAppmodelId() + RedisPrefix.FROMID + wxuserId;
+                GroupMallProperties.getRedisPrefix() + balanceOrder.getAppmodelId() + RedisPrefix.FROMID + wxuserId;
         List<String> formIds = (List<String>) redisTemplate.opsForValue().get(key);
         if (CollectionUtil.isNotEmpty(formIds)) {
             String formId = formIds.get(0);
@@ -133,15 +133,15 @@ public class GroupBpavawiceOrderUtil {
             redisTemplate.opsForValue().set(key, formIds);
             Map<String, Object> map = new HashMap<>(16);
             map.put("formId", formId);
-            map.put("appmodelId", bpavawiceOrder.getAppmodelId());
+            map.put("appmodelId", balanceOrder.getAppmodelId());
             //提现申请时间
-            map.put("time", bpavawiceOrder.getCreateTime());
-            map.put("withdrawAccount", bpavawiceOrder.getOutBpavawice());
+            map.put("time", balanceOrder.getCreateTime());
+            map.put("withdrawAccount", balanceOrder.getOutBalance());
             map.put("wxuserId", wxuserId);
             map.put("type", TemplateMsgType.WITHDRAWFAIL);
             activeDelaySendJobHandler
                     .savaTask(JSON.toJSONString(map), ActiviMqQueueName.ORDER_MINIPROGRAM_TEMPLATE_MESSAGE, 0L,
-                            bpavawiceOrder.getAppmodelId(), false);
+                            balanceOrder.getAppmodelId(), false);
         }
     }
 }
