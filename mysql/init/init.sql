@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+CREATE DATABASE IF NOT EXISTS group_purchase DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+use group_purchase;
 
 source /opt/sql/group_purchase.sql;
+
+CREATE database if NOT EXISTS `xxl_job` default character set utf8mb4 collate utf8mb4_unicode_ci;
+use `xxl_job`;
 
 source /opt/sql/xxl_job.sql;
