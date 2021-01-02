@@ -15,6 +15,26 @@ git clone https://github.com/bgniao/group_purchase.git
 cd group_purchase
 ```
 
+- 修改密钥
+
+```shell script 
+文件 com/mds/group/purchase/utils/GeoCodeUtil.java
+字段 private static final String KEY = "xxx";
+
+文件 com/mds/group/purchase/utils/KdniaoTrackQueryAPI.java
+字段  private String EBusinessID = "xxx";    
+字段  private String AppKey = "xxx";         
+
+文件 docker-compose.yml
+字段 group-purchase.environment.PARAMS
+```
+
+- 编译源码
+
+```shell script
+mvn clean package -Dmaven.test.skip=true
+```
+
 - 启动docker-compose
 
 ```shell script
@@ -23,7 +43,7 @@ docker-compose up -d
 
 - 打开swagger页面
 
-[http://localhost:8080/group_purchase/swagger-ui.html](http://localhost:8080/group_purchase/swagger-ui.html)
+[http://localhost:8089/api/swagger-ui.html](http://localhost:8089/api/swagger-ui.html)
 
 ## 项目介绍
 `group_purchase`是一套社区团购系统，包括小程序端及后台管理系统，基于SpringBoot+MyBatis实现，采用Docker
@@ -81,9 +101,11 @@ docker-compose up -d
 
 
 
-## 架构图
 
 ## 关于我们
+
+我们是一家专业从事开发小程序社区团购的公司。本项目是我们公司之前的单体服务，实际使用中我们遇到了很多痛点，其中包括多版本运行，服务横行扩展困难等问题，为此我们重构了服务，修改为Spring Cloud的
+微服务。2020年4月份上线第一个正式版本，并不断的迭代更新，获得了客户一直好评。
 
 ## 许可证
 
