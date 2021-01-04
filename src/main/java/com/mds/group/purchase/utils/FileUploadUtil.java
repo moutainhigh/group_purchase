@@ -16,12 +16,11 @@
 
 package com.mds.group.purchase.utils;
 
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONObject;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The type File upload util.
@@ -30,35 +29,17 @@ import java.util.Map;
  */
 public class FileUploadUtil {
 
-    /**
-     * Upload image string.
-     *
-     * @param file       the file
-     * @param appmodelId the appmodel id
-     * @return the string
-     */
+
+    private static final String UPLOAD_DIR = "/mydata/file_store/";
+
+    private static final String BASE_URL = "https://demo.bgniao.cn";
+
     public static String uploadImage(File file, String appmodelId) {
-        String url = "https://www.bgniao.cn/medusafile/common/v1/uploads/1001/groupmall/" + appmodelId;
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("files", file);
-        String result = HttpUtil.post(url, paramMap);
-        JSONObject jsonObject = new JSONObject(result);
-        if ("SUCCESS".equalsIgnoreCase(jsonObject.getStr("message"))) {
-            return jsonObject.getStr("data");
-        } else {
-            return "";
-        }
-
+        String suffix = FileUtil.extName(file);
+        String filename = appmodelId + File.separator + IdUtil.fastSimpleUUID() + StrUtil.DOT + suffix;
+        File serverFile = new File(UPLOAD_DIR + filename);
+        FileUtil.copy(file, serverFile, true);
+        return BASE_URL + serverFile.getAbsolutePath();
     }
 
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
-    public static void main(String[] args) {
-
-        //File file = FileUtil.file("E:\\11.jpg");
-        //System.out.println(uploadImage(file, "S00050001wx17c66eb4da0ef6ab"));
-    }
 }
