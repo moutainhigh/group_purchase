@@ -1,6 +1,8 @@
-# group_purchase
+# 社区团购1.0
+## 项目介绍
+`group_purchase`是一套社区团购系统，包括小程序端及后台管理系统，基于SpringBoot+MyBatis实现，采用Docker
+容器化部署。包含营销活动、文章管理、财务管理、商品管理、订单管理、购物车、店铺装修、接龙订单、微信群机器人、店铺设置、用户管理等功能
 
-## 前言
 
 ## 快速开始
 - 拉取代码
@@ -45,10 +47,6 @@ docker-compose up -d
 
 [http://localhost:8089/api/swagger-ui.html](http://localhost:8089/api/swagger-ui.html)
 
-## 项目介绍
-`group_purchase`是一套社区团购系统，包括小程序端及后台管理系统，基于SpringBoot+MyBatis实现，采用Docker
-容器化部署。包含营销活动、文章管理、财务管理、商品管理、订单管理、购物车、店铺装修、接龙订单、微信群机器人、店铺设置、用户管理等功能
-
 ## 项目演示
 小程序：
 管理后台地址：
@@ -80,7 +78,6 @@ docker-compose up -d
 
 ## 技术选型
 
-### 后端技术
 
 | 技术                 | 说明                | 官网                                           |
 | -------------------- | ------------------- | ---------------------------------------------- |
@@ -100,12 +97,59 @@ docker-compose up -d
 | Hibernator-Validator | 验证框架            | http://hibernate.org/validator                 |
 
 
+## [关于我们](https://www.bgniao.cn)
 
 
-## 关于我们
+我们是一家专业从事开发小程序社区团购的公司。本项目是我们公司之前的1.0版本，在实际使用中我们遇到了很多痛点，其中包括多版本运行，服务横行扩展困难等问题，为此我们在1.0的基础上重构代码，总结问题。推出了基于Spring Cloud的1.2版本，于2020年4月份上线第一个正式版本，并不断迭代更新，获得了客户一致好评。
 
-我们是一家专业从事开发小程序社区团购的公司。本项目是我们公司之前的单体服务，实际使用中我们遇到了很多痛点，其中包括多版本运行，服务横行扩展困难等问题，为此我们重构了服务，修改为Spring Cloud的
-微服务。2020年4月份上线第一个正式版本，并不断的迭代更新，获得了客户一直好评。
+## Spring Cloud版本
+
+### 亮点功能
+- 独立提货点、提货点合并
+- 首页自定义DIY装修、分类页装修
+- 会员+返利模式
+- 商品订单自动分拣
+- 一分钟快速创建店铺并提交审核
+- 商城和社区团购并存模式
+- 第三方低费率支付
+
+### 功能架构
+
+![FunctionList](images/FunctionList.jpeg)
+
+### 系统架构
+
+![SystemArchitecture](images/SystemArchitecture.jpeg)
+
+### 技术选型
+
+todo
+
+### 平台效果图
+
+#### 会员
+
+![Member](images/Member.png)
+
+#### 储值
+
+![Stored](images/Stored.png)
+
+#### 订单
+
+![Order](images/Order.png)
+
+#### 打印
+
+![Print](images/Print.png)
+
+#### 积分
+
+![Integral](images/Integral.png)
+
+#### 财务
+
+![Financial](images/Financial.png)
 
 ## 许可证
 

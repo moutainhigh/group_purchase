@@ -33,11 +33,11 @@ services:
     container_name: activemq
     networks: #加入指定网络
       - group_purchase
-  #mongo
-  mongo:
+  #mongodb
+  mongodb:
     image: mongo
     restart: always
-    container_name: mongo
+    container_name: mongodb
     volumes:
       - /mydata/mongo/db:/data/db #数据文件挂载
     networks: #加入指定网络
@@ -73,7 +73,7 @@ services:
     networks: #加入指定网络
       - group_purchase
     depends_on:
-      - mongo
+      - mongodb
       - activemq
       - redis
       - mysql
